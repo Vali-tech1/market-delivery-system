@@ -1,7 +1,15 @@
-const createServer = require("./UI/server");
+const express = require("express");
+const cors = require("cors");
 
-const app = createServer();
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Market API is running 🚀");
+});
 
 app.listen(3000, () => {
-  console.log("Server started on port 3000");
+  console.log("Server running on http://localhost:3000");
 });
