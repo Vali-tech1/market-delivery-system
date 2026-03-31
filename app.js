@@ -1,15 +1,58 @@
+
 const express = require("express");
-const cors = require("cors");
+const FileRepository = require("./Data/FileRepository");
+const ProductService = require("./Services/ProductService");
 
 const app = express();
-
-app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Market API is running 🚀");
+const repo = new FileRepository("products.csv");
+const service = new ProductService(repo);
+
+// GET all
+app.get("/products", (req, res) => {
+  const filter = req.query.search;
+  res.json(service.getAllProducts(filter));
 });
 
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+// GET by id
+app.get("/products/:id", (req, res) => {
+  res.json(service.getProductById(req.params.id));
+});
+
+// POST
+app.post("/products", (req, res) => {
+  try {
+    service.addProduct(req.body);
+    res.send("Product added");
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
+
+// PUT
+app.put("/products/:id", (req, res) => {
+  service.updateProduct(req.params.id, req.body);
+  res.send("Product updated");
+});
+
+// DELETE
+app.delete("/products/:id", (req, res) => {
+  service.deleteProduct(req.params.id);
+  res.send("Product deleted");
+});
+
+app.listen(3000, () => console.log("Server running"));
+
+app.set("view engine", "ejs");
+
+app.get("/web/products", (req, res) => {
+  const products = service.getAllProducts(req.query.search);
+  res.render("products", { products });
+});
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
