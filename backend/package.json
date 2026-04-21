@@ -1,0 +1,17 @@
+{
+  "name": "market-delivery-system-backend",
+  "version": "1.0.0",
+  "description": "Backend for Market & Delivery System",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "author": "Valdrin Bislimi",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "pg": "^8.20.0"
+  }
+}
