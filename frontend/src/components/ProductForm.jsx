@@ -1,13 +1,17 @@
 import { useState } from "react";
 
-function ProductForm({ onAddProduct }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    stock: "",
-    category_id: 1,
-  });
+const initialForm = {
+  name: "",
+  description: "",
+  price: "",
+  stock: "",
+  category_id: 1,
+  image_url: "",
+};
+
+function ProductForm({ onAddProduct, isSubmitting = false }) {
+  const [formData, setFormData] = useState(initialForm);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -16,46 +20,81 @@ function ProductForm({ onAddProduct }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     const product = {
       ...formData,
+      name: formData.name.trim(),
+      description: formData.description.trim(),
       price: Number(formData.price),
       stock: Number(formData.stock),
       category_id: Number(formData.category_id),
+      image_url: formData.image_url.trim(),
     };
 
-    onAddProduct(product);
+    if (!product.name || product.price <= 0 || product.stock < 0) {
+      setError("Enter a name, a positive price, and a stock value of 0 or more.");
+      return;
+    }
 
-    setFormData({
-      name: "",
-      description: "",
-      price: "",
-      stock: "",
-      category_id: 1,
-    });
+    await onAddProduct(product);
+    setFormData(initialForm);
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "30px" }}>
-      <h2>Add Product</h2>
+    <form className="product-form" onSubmit={handleSubmit}>
+      <div>
+        <span className="eyebrow">Inventory</span>
+        <h2>Add product</h2>
+      </div>
 
-      <input name="name" placeholder="Product name" value={formData.name} onChange={handleChange} required />
+      {error && <p className="form-error">{error}</p>}
 
-      <input name="description" placeholder="Description" value={formData.description} onChange={handleChange} required />
+      <div className="form-grid">
+        <label>
+          Product name
+          <input name="name" value={formData.name} onChange={handleChange} required />
+        </label>
 
-      <input name="price" type="number" step="0.01" placeholder="Price" value={formData.price} onChange={handleChange} required />
+        <label>
+          Description
+          <input name="description" value={formData.description} onChange={handleChange} required />
+        </label>
 
-      <input name="stock" type="number" placeholder="Stock" value={formData.stock} onChange={handleChange} required />
+        <label>
+          Price
+          <input name="price" type="number" min="0.01" step="0.01" value={formData.price} onChange={handleChange} required />
+        </label>
 
-      <select name="category_id" value={formData.category_id} onChange={handleChange}>
-        <option value="1">Pije</option>
-        <option value="2">Ushqime</option>
-        <option value="3">Embelsira</option>
-      </select>
+        <label>
+          Stock
+          <input name="stock" type="number" min="0" value={formData.stock} onChange={handleChange} required />
+        </label>
 
-      <button type="submit">Add Product</button>
+        <label>
+          Category
+          <select name="category_id" value={formData.category_id} onChange={handleChange}>
+            <option value="1">Drinks</option>
+            <option value="2">Groceries</option>
+            <option value="3">Sweets</option>
+            <option value="4">Bakery</option>
+            <option value="5">Dairy</option>
+            <option value="6">Fruits & Vegetables</option>
+            <option value="7">Household</option>
+          </select>
+        </label>
+
+        <label>
+          Image URL
+          <input name="image_url" value={formData.image_url} onChange={handleChange} placeholder="https://..." />
+        </label>
+      </div>
+
+      <button className="button button-primary" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Adding..." : "Add product"}
+      </button>
     </form>
   );
 }

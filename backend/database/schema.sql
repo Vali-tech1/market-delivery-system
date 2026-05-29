@@ -26,10 +26,16 @@ CREATE TABLE products (
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    courier_id INT REFERENCES users(id) ON DELETE SET NULL,
     total_amount DECIMAL(10,2) NOT NULL CHECK (total_amount >= 0),
     status VARCHAR(30) NOT NULL DEFAULT 'pending'
-        CHECK (status IN ('pending', 'confirmed', 'preparing', 'out_for_delivery', 'delivered', 'cancelled')),
+        CHECK (status IN ('pending', 'accepted', 'preparing', 'assigned_to_courier', 'delivered', 'cancelled')),
+    delivery_status VARCHAR(30) DEFAULT 'not_assigned'
+        CHECK (delivery_status IN ('not_assigned', 'assigned', 'picked_up', 'on_the_way', 'delivered')),
     address TEXT NOT NULL,
+    delivery_address TEXT,
+    delivery_latitude NUMERIC(10, 7),
+    delivery_longitude NUMERIC(10, 7),
     phone VARCHAR(30) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

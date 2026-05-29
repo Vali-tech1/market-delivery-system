@@ -1,18 +1,14 @@
 function SearchBar({ search, setSearch }) {
   return (
-    <input
-      type="text"
-      placeholder="Search products..."
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      style={{
-        padding: "10px",
-        width: "300px",
-        marginBottom: "20px",
-        borderRadius: "8px",
-        border: "1px solid #ccc",
-      }}
-    />
+    <label className="search-field">
+      <span>Search</span>
+      <input
+        type="text"
+        placeholder="Search by product name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+    </label>
   );
 }
 
